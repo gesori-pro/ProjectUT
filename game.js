@@ -551,10 +551,8 @@ class VisualNovelEngine {
             } else {
                 console.log('게임 종료');
                 this.disableAutoSkip();
-                // 게임 종료 처리 추가
-                if (confirm('게임이 종료되었습니다. 처음으로 돌아가시겠습니까?')) {
-                    this.resetGame();
-                }
+                // 게임 종료 처리 - 인게임 선택지로 재시작 버튼 표시
+                this.showEndingChoice();
             }
         }
 
@@ -639,6 +637,29 @@ class VisualNovelEngine {
 
         // 게임 재시작
         this.showScript(this.currentId);
+    }
+
+    // 게임 종료 시 인게임 선택지 표시 (팝업 대신)
+    showEndingChoice() {
+        this.choicesContainer.innerHTML = '';
+        this.choicesContainer.style.left = '50%';
+        this.choicesContainer.style.top = '50%';
+        this.choicesContainer.style.transform = 'translate(-50%, -50%)';
+        this.choicesContainer.style.width = 'auto';
+        this.choicesContainer.style.height = 'auto';
+        this.choicesContainer.style.flexDirection = 'column';
+
+        const restartButton = document.createElement('button');
+        restartButton.className = 'choice-button';
+        restartButton.innerHTML = '🔄 처음으로 돌아가기';
+        restartButton.addEventListener('click', () => {
+            this.choicesContainer.classList.remove('visible');
+            this.resetGame();
+        });
+
+        this.choicesContainer.appendChild(restartButton);
+        this.choicesContainer.classList.add('visible');
+        this.dialogueBox.style.display = 'none';
     }
 }
 
