@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Novel - Project Untitled</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- 배경 이미지 (크로스페이드용 2개 레이어) -->
+        <div id="background"></div>
+        <div id="background-next"></div>
+
+        <!-- 캐릭터 표시 영역 -->
+        <div id="character-layer">
+            <img id="character-left" class="character" src="" alt="">
+            <img id="character-center" class="character" src="" alt="">
+            <img id="character-right" class="character" src="" alt="">
+        </div>
+
+        <!-- 대화창 -->
+        <div id="dialogue-box">
+            <div id="name-box"></div>
+            <div id="dialogue-text"></div>
+            <div id="click-indicator">▼</div>
+        </div>
+
+        <!-- 선택지 영역 -->
+        <div id="choices-container"></div>
+
+        <!-- UI 버튼들 -->
+        <div id="ui-buttons">
+            <button id="btn-auto">자동</button>
+        </div>
+    </div>
+
+    <script src="script-data.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>

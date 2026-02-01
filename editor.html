@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Novel Script Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7eb8da;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .toolbar button {
+            padding: 12px 24px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a6fa5, #166d67);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 111, 165, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(60, 60, 100, 0.8);
+            color: #aaa;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(80, 80, 120, 0.9);
+            color: white;
+        }
+
+        .btn-danger {
+            background: rgba(180, 60, 60, 0.8);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: rgba(200, 80, 80, 0.9);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .script-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .script-item {
+            background: rgba(30, 30, 50, 0.9);
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .script-item:hover {
+            border-color: rgba(100, 150, 255, 0.5);
+        }
+
+        .script-item.choice-item {
+            border-left: 4px solid #f0ad4e;
+        }
+
+        .script-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .script-id {
+            font-size: 18px;
+            font-weight: bold;
+            color: #7eb8da;
+        }
+
+        .script-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .script-controls button {
+            padding: 6px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        input,
+        textarea,
+        select {
+            padding: 10px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(20, 20, 40, 0.8);
+            color: #e8e8e8;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: rgba(100, 150, 255, 0.7);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .choices-container {
+            background: rgba(20, 20, 40, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .choice-row {
+            display: grid;
+            grid-template-columns: 1fr 55px 70px 70px 70px 35px;
+            gap: 5px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .add-choice-btn {
+            margin-top: 10px;
+        }
+
+        .output-area {
+            margin-top: 30px;
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .output-area h3 {
+            margin-bottom: 15px;
+            color: #7eb8da;
+        }
+
+        #outputCode {
+            width: 100%;
+            min-height: 300px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .toggle-type {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .toggle-type button {
+            padding: 8px 16px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            background: transparent;
+            color: #aaa;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .toggle-type button.active {
+            background: rgba(74, 111, 165, 0.5);
+            color: white;
+            border-color: rgba(100, 150, 255, 0.7);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📝 Visual Novel Script Editor</h1>
+
+        <div class="toolbar">
+            <button class="btn-primary" onclick="addDialogue()">+ 대사 추가</button>
+            <button class="btn-primary" onclick="addChoice()">+ 선택지 추가</button>
+            <button class="btn-secondary" onclick="loadFromFile()">📂 파일에서 불러오기</button>
+            <button class="btn-primary" onclick="generateCode()">💾 코드 생성</button>
+            <button class="btn-secondary" onclick="copyCode()">📋 복사</button>
+        </div>
+
+        <div class="script-list" id="scriptList">
+            <!-- 스크립트 아이템들이 여기 추가됨 -->
+        </div>
+
+        <div class="output-area">
+            <h3>생성된 SCRIPT 코드</h3>
+            <p class="help-text">아래 코드를 script-data.js의 SCRIPT 배열 부분에 붙여넣으세요.</p>
+            <textarea id="outputCode" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        let scriptItems = [];
+        let nextId = 1;
+
+        // 대사 아이템 추가
+        function addDialogue(data = null) {
+            const item = {
+                type: 'dialogue',
+                id: data?.id || nextId++,
+                name: data?.name || '',
+                text: data?.text || '',
+                background: data?.background || '',
+                bgm: data?.bgm || '',
+                charLeft: data?.characters?.left || '',
+                charCenter: data?.characters?.center || '',
+                charRight: data?.characters?.right || '',
+                speaker: data?.speaker || '',
+                boxOpacity: data?.boxOpacity ?? '',
+                nextId: data?.nextId ?? ''
+            };
+            scriptItems.push(item);
+            renderList();
+        }
+
+        // 선택지 아이템 추가
+        function addChoice(data = null) {
+            const item = {
+                type: 'choice',
+                id: data?.id || nextId++,
+                layout: data?.layout || 'three',
+                charLeft: data?.characters?.left || '',
+                charCenter: data?.characters?.center || '',
+                charRight: data?.characters?.right || '',
+                nextId: data?.nextId ?? '',
+                choices: data?.choices || [
+                    { text: '', nextId: '', x: '', y: '' },
+                    { text: '', nextId: '', x: '', y: '' }
+                ]
+            };
+            scriptItems.push(item);
+            renderList();
+        }
+
+        // 아이템 삭제
+        function deleteItem(index) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                scriptItems.splice(index, 1);
+                renderList();
+            }
+        }
+
+        // 아이템 이동
+        function moveItem(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= scriptItems.length) return;
+
+            [scriptItems[index], scriptItems[newIndex]] = [scriptItems[newIndex], scriptItems[index]];
+            renderList();
+        }
+
+        function addChoiceOption(index) {
+            scriptItems[index].choices.push({ text: '', nextId: '', x: '', y: '' });
+            renderList();
+        }
+
+        // 선택지 삭제
+        function removeChoiceOption(itemIndex, choiceIndex) {
+            if (scriptItems[itemIndex].choices.length > 1) {
+                scriptItems[itemIndex].choices.splice(choiceIndex, 1);
+                renderList();
+            }
+        }
+
+        // 입력값 업데이트
+        function updateValue(index, field, value) {
+            scriptItems[index][field] = value;
+        }
+
+        // 선택지 값 업데이트
+        function updateChoiceValue(itemIndex, choiceIndex, field, value) {
+            scriptItems[itemIndex].choices[choiceIndex][field] = value;
+        }
+
+        // 리스트 렌더링
+        function renderList() {
+            const container = document.getElementById('scriptList');
+            container.innerHTML = '';
+
+            scriptItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'script-item' + (item.type === 'choice' ? ' choice-item' : '');
+
+                if (item.type === 'dialogue') {
+                    div.innerHTML = `
+                        <div class="script-header">
+                            <span class="script-id">ID: <input type="number" value="${item.id}" 
+                                onchange="updateValue(${index}, 'id', parseInt(this.value))" 
+                                style="width: 60px;"></span>
+                            <div class="script-controls">
+                                <button class="btn-secondary" onclick="moveItem(${index}, -1)">↑</button>
+                                <button class="btn-secondary" onclick="moveItem(${index}, 1)">↓</button>
+                                <button class="btn-danger" onclick="deleteItem(${index})">삭제</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>화자 이름</label>
+                                <input type="text" value="${item.name}" 
+                                    onchange="updateValue(${index}, 'name', this.value)"
+                                    placeholder="비워두면 나레이션">
+                            </div>
+                            <div class="form-group">
+                                <label>배경 (경로)</label>
+                                <input type="text" value="${item.background}" 
+                                    onchange="updateValue(${index}, 'background', this.value)"
+                                    placeholder="예: Background/Daytime.png">
+                            </div>
+                            <div class="form-group">
+                                <label>BGM (경로)</label>
+                                <input type="text" value="${item.bgm}" 
+                                    onchange="updateValue(${index}, 'bgm', this.value)"
+                                    placeholder="예: bgm/Main_theme.mp3">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>캡릭터 왼쪽</label>
+                                <input type="text" value="${item.charLeft || ''}" 
+                                    onchange="updateValue(${index}, 'charLeft', this.value)"
+                                    placeholder="Character/xxx.png">
+                            </div>
+                            <div class="form-group">
+                                <label>캡릭터 중앙</label>
+                                <input type="text" value="${item.charCenter || ''}" 
+                                    onchange="updateValue(${index}, 'charCenter', this.value)"
+                                    placeholder="Character/xxx.png">
+                            </div>
+                            <div class="form-group">
+                                <label>캡릭터 오른쪽</label>
+                                <input type="text" value="${item.charRight || ''}" 
+                                    onchange="updateValue(${index}, 'charRight', this.value)"
+                                    placeholder="Character/xxx.png">
+                            </div>
+                            <div class="form-group">
+                                <label>화자 위치</label>
+                                <select onchange="updateValue(${index}, 'speaker', this.value)">
+                                    <option value="" ${!item.speaker ? 'selected' : ''}>없음</option>
+                                    <option value="left" ${item.speaker === 'left' ? 'selected' : ''}>왼쪽</option>
+                                    <option value="center" ${item.speaker === 'center' ? 'selected' : ''}>중앙</option>
+                                    <option value="right" ${item.speaker === 'right' ? 'selected' : ''}>오른쪽</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>대사 텍스트 (줄바꿈: &lt;br&gt;)</label>
+                                <textarea onchange="updateValue(${index}, 'text', this.value)"
+                                    placeholder="대사를 입력하세요...">${item.text}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>대화창 투명도 (0~1)</label>
+                                <input type="number" step="0.1" min="0" max="1" value="${item.boxOpacity}" 
+                                    onchange="updateValue(${index}, 'boxOpacity', this.value ? parseFloat(this.value) : '')"
+                                    placeholder="기본값 사용">
+                            </div>
+                            <div class="form-group">
+                                <label>다음 ID로 이동 (선택)</label>
+                                <input type="number" value="${item.nextId}" 
+                                    onchange="updateValue(${index}, 'nextId', this.value ? parseInt(this.value) : '')"
+                                    placeholder="비워두면 순차 진행">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    let choicesHtml = item.choices.map((choice, cIndex) => `
+                        <div class="choice-item" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 5px; margin-bottom: 8px;">
+                            <div class="choice-row">
+                                <input type="text" value="${choice.text}" 
+                                    onchange="updateChoiceValue(${index}, ${cIndex}, 'text', this.value)"
+                                    placeholder="선택지 텍스트">
+                                <input type="number" value="${choice.nextId}" 
+                                    onchange="updateChoiceValue(${index}, ${cIndex}, 'nextId', parseInt(this.value))"
+                                    placeholder="ID">
+                                <input type="number" value="${choice.x !== undefined ? choice.x : ''}" 
+                                    onchange="updateChoiceValue(${index}, ${cIndex}, 'x', this.value ? parseInt(this.value) : '')"
+                                    placeholder="X">
+                                <input type="number" value="${choice.y !== undefined ? choice.y : ''}" 
+                                    onchange="updateChoiceValue(${index}, ${cIndex}, 'y', this.value ? parseInt(this.value) : '')"
+                                    placeholder="Y">
+                                <select onchange="updateChoiceValue(${index}, ${cIndex}, 'target', this.value)">
+                                    <option value="" ${!choice.target ? 'selected' : ''}>타겟</option>
+                                    <option value="left" ${choice.target === 'left' ? 'selected' : ''}>왼쪽</option>
+                                    <option value="center" ${choice.target === 'center' ? 'selected' : ''}>중앙</option>
+                                    <option value="right" ${choice.target === 'right' ? 'selected' : ''}>오른쪽</option>
+                                </select>
+                                <button class="btn-danger" onclick="removeChoiceOption(${index}, ${cIndex})">×</button>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 5px; align-items: center;">
+                                <input type="text" value="${choice.image || ''}" 
+                                    onchange="updateChoiceValue(${index}, ${cIndex}, 'image', this.value)"
+                                    placeholder="이미지 경로 (예: images/icon.png)" style="flex: 1;">
+                                <label style="display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                    <input type="checkbox" ${choice.once ? 'checked' : ''} 
+                                        onchange="updateChoiceValue(${index}, ${cIndex}, 'once', this.checked)">
+                                    1회만
+                                </label>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    div.innerHTML = `
+                        <div class="script-header">
+                            <span class="script-id">ID: <input type="number" value="${item.id}" 
+                                onchange="updateValue(${index}, 'id', parseInt(this.value))" 
+                                style="width: 60px;"> [선택지]</span>
+                            <div class="script-controls">
+                                <button class="btn-secondary" onclick="moveItem(${index}, -1)">↑</button>
+                                <button class="btn-secondary" onclick="moveItem(${index}, 1)">↓</button>
+                                <button class="btn-danger" onclick="deleteItem(${index})">삭제</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>레이아웃</label>
+                                <select onchange="updateValue(${index}, 'layout', this.value)">
+                                    <option value="three" ${item.layout === 'three' ? 'selected' : ''}>3인</option>
+                                    <option value="two" ${item.layout === 'two' ? 'selected' : ''}>2인</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>캐릭터 왼쪽</label>
+                                <input type="text" value="${item.charLeft || ''}" 
+                                    onchange="updateValue(${index}, 'charLeft', this.value)"
+                                    placeholder="Character/xxx.png">
+                            </div>
+                            <div class="form-group">
+                                <label>캐릭터 중앙</label>
+                                <input type="text" value="${item.charCenter || ''}" 
+                                    onchange="updateValue(${index}, 'charCenter', this.value)"
+                                    placeholder="Character/xxx.png" ${item.layout === 'two' ? 'disabled' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label>캐릭터 오른쪽</label>
+                                <input type="text" value="${item.charRight || ''}" 
+                                    onchange="updateValue(${index}, 'charRight', this.value)"
+                                    placeholder="Character/xxx.png">
+                            </div>
+                            <div class="form-group">
+                                <label>완료 후 이동 ID</label>
+                                <input type="number" value="${item.nextId !== undefined ? item.nextId : ''}" 
+                                    onchange="updateValue(${index}, 'nextId', this.value ? parseInt(this.value) : '')"
+                                    placeholder="모든 선택 후">
+                            </div>
+                        </div>
+                        <div class="choices-container">
+                            <label>선택지 목록</label>
+                            ${choicesHtml}
+                            <button class="btn-secondary add-choice-btn" onclick="addChoiceOption(${index})">+ 선택지 추가</button>
+                        </div>
+                    `;
+                }
+
+                container.appendChild(div);
+            });
+        }
+
+        // 코드 생성
+        function generateCode() {
+            let code = '// 게임 설정\n';
+            code += 'const GAME_CONFIG = {\n';
+            code += '    textSpeed: 30,      // 텍스트 타이핑 속도 (ms) - 낮을수록 빠름\n';
+            code += '    autoDelay: 2000,    // 오토 모드에서 다음으로 넘어가는 딜레이 (ms)\n';
+            code += '    skipSpeed: 5,       // 스킵 모드 텍스트 속도 (ms)\n';
+            code += '};\n\n';
+            code += 'const SCRIPT = [\n';
+
+            scriptItems.forEach((item, index) => {
+                code += '    {\n';
+                code += `        id: ${item.id},\n`;
+
+                if (item.type === 'dialogue') {
+                    if (item.background) code += `        background: "${item.background}",\n`;
+                    if (item.bgm) code += `        bgm: "${item.bgm}",\n`;
+                    // 캐릭터 이미지
+                    if (item.charLeft || item.charCenter || item.charRight) {
+                        code += '        characters: {\n';
+                        if (item.charLeft) code += `            left: "${item.charLeft}",\n`;
+                        if (item.charCenter) code += `            center: "${item.charCenter}",\n`;
+                        if (item.charRight) code += `            right: "${item.charRight}",\n`;
+                        code += '        },\n';
+                    }
+                    if (item.speaker) code += `        speaker: "${item.speaker}",\n`;
+                    if (item.name) code += `        name: "${item.name}",\n`;
+                    if (item.text) code += `        text: "${item.text.replace(/"/g, '\\"')}",\n`;
+                    if (item.boxOpacity !== '' && item.boxOpacity !== undefined) {
+                        code += `        boxOpacity: ${item.boxOpacity},\n`;
+                    }
+                    if (item.nextId !== '' && item.nextId !== undefined) {
+                        code += `        nextId: ${item.nextId},\n`;
+                    }
+                } else {
+                    // 레이아웃 (2인/3인)
+                    if (item.layout && item.layout !== 'three') {
+                        code += `        layout: "${item.layout}",\n`;
+                    }
+                    // 캐릭터 이미지 (선택지용)
+                    if (item.charLeft || item.charCenter || item.charRight) {
+                        code += '        characters: {\n';
+                        if (item.charLeft) code += `            left: "${item.charLeft}",\n`;
+                        if (item.charCenter && item.layout !== 'two') code += `            center: "${item.charCenter}",\n`;
+                        if (item.charRight) code += `            right: "${item.charRight}",\n`;
+                        code += '        },\n';
+                    }
+                    // 완료 후 이동 ID
+                    if (item.nextId !== undefined && item.nextId !== '') {
+                        code += `        nextId: ${item.nextId},\n`;
+                    }
+                    code += '        choices: [\n';
+                    item.choices.forEach((choice, cIndex) => {
+                        let choiceStr = `{ text: "${choice.text.replace(/"/g, '\\"')}", nextId: ${choice.nextId}`;
+                        if (choice.x !== '' && choice.x !== undefined) {
+                            choiceStr += `, x: ${choice.x}`;
+                        }
+                        if (choice.y !== '' && choice.y !== undefined) {
+                            choiceStr += `, y: ${choice.y}`;
+                        }
+                        if (choice.target) {
+                            choiceStr += `, target: "${choice.target}"`;
+                        }
+                        if (choice.image) {
+                            choiceStr += `, image: "${choice.image}"`;
+                        }
+                        if (choice.once) {
+                            choiceStr += `, once: true`;
+                        }
+                        choiceStr += ' }';
+                        code += `            ${choiceStr}`;
+                        code += cIndex < item.choices.length - 1 ? ',\n' : '\n';
+                    });
+                    code += '        ]\n';
+                }
+
+                code += '    }';
+                code += index < scriptItems.length - 1 ? ',\n' : '\n';
+            });
+
+            code += '];\n';
+            code += '\n// 스크립트 맵 생성\n';
+            code += 'const SCRIPT_MAP = {};\n';
+            code += 'SCRIPT.forEach((item, index) => {\n';
+            code += '    SCRIPT_MAP[item.id] = { ...item, _index: index };\n';
+            code += '});\n';
+
+            document.getElementById('outputCode').value = code;
+        }
+
+        // 코드 복사
+        function copyCode() {
+            const output = document.getElementById('outputCode');
+            output.select();
+            document.execCommand('copy');
+            alert('클립보드에 복사되었습니다!');
+        }
+
+        // 파일에서 불러오기 (script-data.js를 직접 파싱)
+        function loadFromFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.js';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const content = event.target.result;
+                        // SCRIPT 배열 추출 시도
+                        const scriptMatch = content.match(/const SCRIPT\s*=\s*\[([\s\S]*?)\];/);
+                        if (scriptMatch) {
+                            // 간단한 파싱 (eval 사용 - 보안 주의)
+                            const scriptContent = scriptMatch[1];
+                            // 정규식으로 각 아이템 추출
+                            parseScriptContent(content);
+                            alert('파일을 불러왔습니다!');
+                        } else {
+                            alert('SCRIPT 배열을 찾을 수 없습니다.');
+                        }
+                    } catch (err) {
+                        alert('파일 파싱 오류: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // 스크립트 내용 파싱
+        function parseScriptContent(content) {
+            try {
+                // 임시로 eval을 사용하여 SCRIPT 배열 추출
+                // BACKGROUNDS와 CHARACTERS를 빈 객체로 대체
+                const safeContent = content
+                    .replace(/BACKGROUNDS\.\w+/g, '""')
+                    .replace(/CHARACTERS\.\w+(\?\.\w+)*/g, '""');
+
+                // SCRIPT 배열만 추출
+                const match = safeContent.match(/const SCRIPT\s*=\s*(\[[\s\S]*?\]);/);
+                if (match) {
+                    const scriptArray = eval(match[1]);
+                    scriptItems = [];
+                    nextId = 1;
+
+                    scriptArray.forEach(item => {
+                        if (item.choices) {
+                            addChoice(item);
+                        } else {
+                            addDialogue(item);
+                        }
+                        if (item.id >= nextId) nextId = item.id + 1;
+                    });
+                }
+            } catch (err) {
+                console.error('파싱 오류:', err);
+                alert('파싱 중 오류가 발생했습니다. 수동으로 추가해주세요.');
+            }
+        }
+
+        // 초기 예시 추가
+        addDialogue({ id: 1, text: '여기에 대사를 입력하세요.' });
+    </script>
+</body>
+
+</html>

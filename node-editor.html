@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Novel Node Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/litegraph.js@0.7.18/build/litegraph.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litegraph.js@0.7.18/css/litegraph.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            color: #e8e8e8;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            padding: 12px 20px;
+            background: linear-gradient(180deg, #252540 0%, #1e1e35 100%);
+            border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .toolbar-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #7eb8da;
+            margin-right: 20px;
+        }
+
+        .toolbar button {
+            padding: 10px 20px;
+            font-size: 13px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a6fa5, #166d67);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(60, 60, 100, 0.8);
+            color: #ccc;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(80, 80, 120, 0.9);
+            color: white;
+        }
+
+        .btn-danger {
+            background: rgba(180, 60, 60, 0.8);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: rgba(200, 80, 80, 0.9);
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #202030;
+        }
+
+        #graphCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(25, 25, 45, 0.95);
+            border-left: 1px solid rgba(100, 150, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            background: rgba(40, 40, 70, 0.5);
+            border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+        }
+
+        .sidebar-header h3 {
+            color: #7eb8da;
+            font-size: 14px;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .output-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-area textarea {
+            flex: 1;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: rgba(15, 15, 30, 0.9);
+            color: #a8d8b8;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            resize: none;
+        }
+
+        .output-area textarea:focus {
+            outline: none;
+        }
+
+        .help-panel {
+            padding: 15px;
+            background: rgba(30, 30, 50, 0.8);
+            border-top: 1px solid rgba(100, 150, 255, 0.2);
+        }
+
+        .help-panel h4 {
+            color: #7eb8da;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .help-panel ul {
+            list-style: none;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .help-panel li {
+            margin-bottom: 5px;
+        }
+
+        .help-panel kbd {
+            background: rgba(60, 60, 100, 0.8);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        /* LiteGraph 스타일 오버라이드 */
+        .litegraph .litecontextmenu {
+            background: rgba(30, 30, 50, 0.98) !important;
+            border: 1px solid rgba(100, 150, 255, 0.3) !important;
+        }
+
+        .litegraph .litecontextmenu .litemenu-entry {
+            color: #e8e8e8 !important;
+        }
+
+        .litegraph .litecontextmenu .litemenu-entry:hover {
+            background: rgba(74, 111, 165, 0.5) !important;
+        }
+
+        .node-info {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            padding: 8px 20px;
+            background: rgba(20, 20, 40, 0.9);
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid rgba(100, 150, 255, 0.1);
+        }
+
+        .stats-bar span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stats-bar .count {
+            color: #7eb8da;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="toolbar">
+            <span class="toolbar-title">🎮 Visual Novel Node Editor</span>
+            <button class="btn-primary" onclick="addDialogueNode()">+ 대사 노드</button>
+            <button class="btn-primary" onclick="addChoiceNode()">+ 선택지 노드</button>
+            <button class="btn-secondary" onclick="loadFromFile()">📂 스크립트 불러오기</button>
+            <button class="btn-primary" onclick="generateCode()">💾 코드 생성</button>
+            <button class="btn-primary" onclick="saveAsScriptData()">📥 script-data.js 저장</button>
+            <button class="btn-secondary" onclick="copyCode()">📋 복사</button>
+            <button class="btn-secondary" onclick="saveGraph()">💾 그래프 저장</button>
+            <button class="btn-secondary" onclick="loadGraph()">📂 그래프 불러오기</button>
+            <button class="btn-danger" onclick="clearGraph()">🗑️ 초기화</button>
+        </div>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h3>생성된 코드</h3>
+                </div>
+                <div class="sidebar-content">
+                    <div class="node-info">
+                        노드를 연결하면 코드 생성 시 자동으로 ID가 부여됩니다.
+                    </div>
+                    <div class="output-area">
+                        <textarea id="outputCode" readonly placeholder="노드를 연결한 후 '코드 생성' 버튼을 클릭하세요..."></textarea>
+                    </div>
+                </div>
+                <div class="help-panel">
+                    <h4>🎯 사용법</h4>
+                    <ul>
+                        <li><kbd>우클릭</kbd> 노드 추가 메뉴</li>
+                        <li><kbd>드래그</kbd> 노드 이동</li>
+                        <li><kbd>출력→입력</kbd> 연결</li>
+                        <li><kbd>Delete</kbd> 선택 노드 삭제</li>
+                        <li><kbd>Ctrl+드래그</kbd> 캔버스 이동</li>
+                        <li><kbd>휠</kbd> 확대/축소</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <span>대사 노드: <span class="count" id="dialogueCount">0</span></span>
+            <span>선택지 노드: <span class="count" id="choiceCount">0</span></span>
+            <span>연결: <span class="count" id="linkCount">0</span></span>
+        </div>
+    </div>
+
+    <script>
+        // LiteGraph 설정 - 입력에 여러 연결 허용 (분기 합류 가능)
+        LiteGraph.allow_multi_output_for_input = true;
+
+        // LiteGraph 초기화
+        let graph = new LGraph();
+        let canvas;
+
+        // ========================================
+        // 대사 노드 정의 (가로 방향)
+        // ========================================
+        function DialogueNode() {
+            this.addInput("이전", -1);
+            this.addOutput("다음", -1);
+
+            this.properties = {
+                name: "",
+                text: "",
+                background: "",
+                bgm: "",
+                boxOpacity: ""
+            };
+
+            this.color = "#2a5a4a";
+            this.bgcolor = "#1a3a2a";
+
+            this.updateSize();
+        }
+
+        DialogueNode.title = "대사";
+        DialogueNode.desc = "대화 또는 나레이션";
+
+        DialogueNode.prototype.updateSize = function () {
+            // 텍스트 줄 수에 따라 높이 조정
+            const lines = this.properties.text ? this.properties.text.split('<br>').length : 1;
+            const textHeight = Math.max(60, lines * 18 + 20);
+            this.size = [400, 120 + textHeight];
+        };
+
+        DialogueNode.prototype.onDrawForeground = function (ctx) {
+            if (!this.flags.collapsed) {
+                ctx.font = "13px sans-serif";
+
+                // 화자
+                ctx.fillStyle = "#7eb8da";
+                ctx.fillText("화자: " + (this.properties.name || "(나레이션)"), 10, 35);
+
+                // 대사 (줄바꿈 처리)
+                ctx.fillStyle = "#e8e8e8";
+                const textLines = this.properties.text.replace(/<br>/g, '\n').split('\n');
+                let y = 55;
+                textLines.forEach((line, i) => {
+                    // 긴 줄은 자동 줄바꿈
+                    const maxWidth = this.size[0] - 20;
+                    let currentLine = '';
+                    const words = line.split('');
+
+                    for (let char of words) {
+                        const testLine = currentLine + char;
+                        const metrics = ctx.measureText(testLine);
+                        if (metrics.width > maxWidth && currentLine) {
+                            ctx.fillText(currentLine, 10, y);
+                            currentLine = char;
+                            y += 18;
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+                    if (currentLine) {
+                        ctx.fillText(currentLine, 10, y);
+                        y += 18;
+                    }
+                });
+
+                // 구분선
+                y += 5;
+                ctx.strokeStyle = "rgba(100,150,255,0.2)";
+                ctx.beginPath();
+                ctx.moveTo(10, y);
+                ctx.lineTo(this.size[0] - 10, y);
+                ctx.stroke();
+
+                // 배경/BGM 정보
+                y += 15;
+                ctx.fillStyle = "#888";
+                ctx.font = "11px sans-serif";
+                if (this.properties.background) {
+                    ctx.fillText("🖼️ " + this.properties.background.split('/').pop(), 10, y);
+                    y += 15;
+                }
+                if (this.properties.bgm) {
+                    ctx.fillText("🎵 " + this.properties.bgm.split('/').pop(), 10, y);
+                }
+            }
+        };
+
+        DialogueNode.prototype.onDblClick = function (e, pos, graphCanvas) {
+            this.openEditor();
+        };
+
+        DialogueNode.prototype.onMouseDown = function (e, pos, graphCanvas) {
+            // 노드 내부 클릭 시 편집 다이얼로그 열기 (더블클릭 대신 한 번 클릭)
+            if (e.detail === 2) { // 더블클릭
+                this.openEditor();
+                return true;
+            }
+            return false;
+        };
+
+        DialogueNode.prototype.openEditor = function () {
+            const self = this;
+            const currentText = this.properties.text.replace(/<br>/g, '\n');
+
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: #1e1e35; border-radius: 12px; padding: 20px;
+                border: 1px solid rgba(100,150,255,0.3); min-width: 500px;
+            `;
+
+            dialog.innerHTML = `
+                <h3 style="color: #7eb8da; margin-bottom: 15px;">📝 대사 편집</h3>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #aaa; font-size: 12px;">화자</label>
+                    <input id="editName" type="text" value="${this.properties.name}" style="
+                        width: 100%; padding: 8px; margin-top: 5px;
+                        background: #15152a; color: #e8e8e8; border: 1px solid rgba(100,150,255,0.3);
+                        border-radius: 6px; font-size: 14px;
+                    ">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #aaa; font-size: 12px;">대사 (엔터 = 줄바꿈)</label>
+                    <textarea id="editText" style="
+                        width: 100%; height: 150px; padding: 10px; margin-top: 5px;
+                        background: #15152a; color: #e8e8e8; border: 1px solid rgba(100,150,255,0.3);
+                        border-radius: 6px; font-size: 14px; line-height: 1.6; resize: vertical;
+                    ">${currentText}</textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <label style="color: #aaa; font-size: 12px;">배경</label>
+                        <input id="editBg" type="text" value="${this.properties.background}" placeholder="Background/xxx.png" style="
+                            width: 100%; padding: 8px; margin-top: 5px;
+                            background: #15152a; color: #e8e8e8; border: 1px solid rgba(100,150,255,0.3);
+                            border-radius: 6px; font-size: 13px;
+                        ">
+                    </div>
+                    <div>
+                        <label style="color: #aaa; font-size: 12px;">BGM</label>
+                        <input id="editBgm" type="text" value="${this.properties.bgm}" placeholder="bgm/xxx.mp3" style="
+                            width: 100%; padding: 8px; margin-top: 5px;
+                            background: #15152a; color: #e8e8e8; border: 1px solid rgba(100,150,255,0.3);
+                            border-radius: 6px; font-size: 13px;
+                        ">
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #aaa; font-size: 12px;">대화창 투명도 (0~1)</label>
+                    <input id="editOpacity" type="text" value="${this.properties.boxOpacity}" placeholder="비워두면 기본값" style="
+                        width: 100px; padding: 8px; margin-top: 5px;
+                        background: #15152a; color: #e8e8e8; border: 1px solid rgba(100,150,255,0.3);
+                        border-radius: 6px; font-size: 13px;
+                    ">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button id="cancelBtn" style="
+                        padding: 10px 20px; background: rgba(60,60,100,0.8); color: #ccc;
+                        border: 1px solid rgba(100,150,255,0.3); border-radius: 6px; cursor: pointer;
+                    ">취소</button>
+                    <button id="saveBtn" style="
+                        padding: 10px 20px; background: linear-gradient(135deg, #4a6fa5, #166d67);
+                        color: white; border: none; border-radius: 6px; cursor: pointer;
+                    ">저장</button>
+                </div>
+            `;
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            document.getElementById('editText').focus();
+
+            document.getElementById('saveBtn').onclick = function () {
+                self.properties.name = document.getElementById('editName').value;
+                self.properties.text = document.getElementById('editText').value.replace(/\n/g, '<br>');
+                self.properties.background = document.getElementById('editBg').value;
+                self.properties.bgm = document.getElementById('editBgm').value;
+                self.properties.boxOpacity = document.getElementById('editOpacity').value;
+                self.updateSize();
+                document.body.removeChild(overlay);
+            };
+
+            document.getElementById('cancelBtn').onclick = function () {
+                document.body.removeChild(overlay);
+            };
+
+            overlay.onclick = function (e) {
+                if (e.target === overlay) document.body.removeChild(overlay);
+            };
+        };
+
+        // 연결 시 새 입력 슬롯 추가
+        DialogueNode.prototype.onConnectionsChange = function (type, slotIndex, isConnected, link, ioSlot) {
+            if (type === LiteGraph.INPUT && isConnected) {
+                // 모든 입력 슬롯이 연결되어 있으면 새 슬롯 추가
+                let allConnected = true;
+                for (let i = 0; i < this.inputs.length; i++) {
+                    if (!this.inputs[i].link) {
+                        allConnected = false;
+                        break;
+                    }
+                }
+                if (allConnected) {
+                    this.addInput(`이전 ${this.inputs.length + 1}`, -1);
+                    this.size[1] += 20;
+                }
+            }
+            // 연결 해제 시 빈 슬롯 정리 (마지막 하나는 유지)
+            if (type === LiteGraph.INPUT && !isConnected && this.inputs.length > 1) {
+                // 연결 안 된 슬롯 중 마지막 것들 정리
+                let emptySlots = [];
+                for (let i = this.inputs.length - 1; i >= 0; i--) {
+                    if (!this.inputs[i].link) {
+                        emptySlots.push(i);
+                    } else {
+                        break;
+                    }
+                }
+                // 빈 슬롯이 2개 이상이면 하나만 남기고 삭제
+                while (emptySlots.length > 1) {
+                    this.removeInput(emptySlots.shift());
+                    this.size[1] -= 20;
+                }
+            }
+        };
+
+        LiteGraph.registerNodeType("VN/Dialogue", DialogueNode);
+
+        // ========================================
+        // 선택지 노드 정의
+        // ========================================
+        function ChoiceNode() {
+            this.addInput("이전", -1);
+
+            this.properties = {
+                choices: [
+                    { text: "선택지 1" },
+                    { text: "선택지 2" }
+                ]
+            };
+
+            this.setupWidgets();
+            this.color = "#5a4a2a";
+            this.bgcolor = "#3a3a1a";
+        }
+
+        ChoiceNode.title = "선택지";
+        ChoiceNode.desc = "분기 선택";
+
+        ChoiceNode.prototype.setupWidgets = function () {
+            // 기존 위젯 및 출력 제거
+            this.widgets = [];
+            while (this.outputs && this.outputs.length > 0) {
+                this.removeOutput(0);
+            }
+
+            // 각 선택지에 대해 위젯과 출력 추가
+            this.properties.choices.forEach((choice, i) => {
+                this.addWidget("text", `선택 ${i + 1}`, choice.text, (v) => {
+                    this.properties.choices[i].text = v;
+                });
+                this.addOutput(`선택 ${i + 1}`, -1);
+            });
+
+            // 선택지 추가/삭제 버튼
+            this.addWidget("button", "+ 선택지 추가", null, () => {
+                this.properties.choices.push({ text: `선택지 ${this.properties.choices.length + 1}` });
+                this.setupWidgets();
+            });
+
+            if (this.properties.choices.length > 1) {
+                this.addWidget("button", "- 마지막 삭제", null, () => {
+                    if (this.properties.choices.length > 1) {
+                        this.properties.choices.pop();
+                        this.setupWidgets();
+                    }
+                });
+            }
+
+            this.size = [280, 60 + this.properties.choices.length * 30 + 60];
+        };
+
+        // 연결 시 새 입력 슬롯 추가
+        ChoiceNode.prototype.onConnectionsChange = function (type, slotIndex, isConnected, link, ioSlot) {
+            if (type === LiteGraph.INPUT && isConnected) {
+                let allConnected = true;
+                for (let i = 0; i < this.inputs.length; i++) {
+                    if (!this.inputs[i].link) {
+                        allConnected = false;
+                        break;
+                    }
+                }
+                if (allConnected) {
+                    this.addInput(`이전 ${this.inputs.length + 1}`, -1);
+                    this.size[1] += 20;
+                }
+            }
+            if (type === LiteGraph.INPUT && !isConnected && this.inputs.length > 1) {
+                let emptySlots = [];
+                for (let i = this.inputs.length - 1; i >= 0; i--) {
+                    if (!this.inputs[i].link) {
+                        emptySlots.push(i);
+                    } else {
+                        break;
+                    }
+                }
+                while (emptySlots.length > 1) {
+                    this.removeInput(emptySlots.shift());
+                    this.size[1] -= 20;
+                }
+            }
+        };
+
+        LiteGraph.registerNodeType("VN/Choice", ChoiceNode);
+
+        // ========================================
+        // 시작 노드 정의
+        // ========================================
+        function StartNode() {
+            this.addOutput("시작", -1);
+            this.size = [100, 40];
+            this.color = "#4a4a8a";
+            this.bgcolor = "#2a2a5a";
+        }
+
+        StartNode.title = "시작";
+        StartNode.desc = "스크립트 시작점";
+
+        LiteGraph.registerNodeType("VN/Start", StartNode);
+
+        // ========================================
+        // 캔버스 초기화
+        // ========================================
+        function initCanvas() {
+            const canvasElement = document.getElementById("graphCanvas");
+            canvas = new LGraphCanvas(canvasElement, graph);
+
+            canvas.background_image = null;
+            canvas.clear_background = true;
+            canvas.render_canvas_border = false;
+            canvas.default_link_color = "#7eb8da";
+
+            // 캔버스 크기 조정
+            function resizeCanvas() {
+                const container = canvasElement.parentElement;
+                canvasElement.width = container.clientWidth;
+                canvasElement.height = container.clientHeight;
+                canvas.setDirty(true, true);
+            }
+
+            resizeCanvas();
+            window.addEventListener("resize", resizeCanvas);
+
+            graph.start();
+
+            // 시작 노드 추가
+            const startNode = LiteGraph.createNode("VN/Start");
+            startNode.pos = [100, 200];
+            graph.add(startNode);
+
+            updateStats();
+        }
+
+        // ========================================
+        // 노드 추가 함수들
+        // ========================================
+        function addDialogueNode() {
+            const node = LiteGraph.createNode("VN/Dialogue");
+            node.pos = [300 + Math.random() * 200, 150 + Math.random() * 100];
+            graph.add(node);
+            updateStats();
+        }
+
+        function addChoiceNode() {
+            const node = LiteGraph.createNode("VN/Choice");
+            node.pos = [300 + Math.random() * 200, 150 + Math.random() * 100];
+            graph.add(node);
+            updateStats();
+        }
+
+        // ========================================
+        // 그래프 탐색 및 코드 생성
+        // ========================================
+        function generateCode() {
+            const nodes = graph._nodes;
+            if (!nodes || nodes.length === 0) {
+                alert("노드가 없습니다. 먼저 노드를 추가해주세요.");
+                return;
+            }
+
+            // 시작 노드 찾기
+            const startNode = nodes.find(n => n.type === "VN/Start");
+            if (!startNode) {
+                alert("시작 노드가 없습니다. 시작 노드를 추가해주세요.");
+                return;
+            }
+
+            // BFS로 연결된 노드 순서대로 탐색
+            const orderedNodes = [];
+            const nodeIdMap = new Map(); // node -> assigned ID
+            const visited = new Set();
+            const queue = [];
+
+            // 시작 노드의 연결된 노드부터 시작
+            const startLinks = startNode.outputs[0]?.links;
+            if (startLinks && startLinks.length > 0) {
+                startLinks.forEach(linkId => {
+                    const link = graph.links[linkId];
+                    if (link) {
+                        const targetNode = graph.getNodeById(link.target_id);
+                        if (targetNode && !visited.has(targetNode.id)) {
+                            queue.push(targetNode);
+                            visited.add(targetNode.id);
+                        }
+                    }
+                });
+            }
+
+            // BFS 탐색
+            let currentId = 1;
+            while (queue.length > 0) {
+                const node = queue.shift();
+
+                if (node.type !== "VN/Start") {
+                    nodeIdMap.set(node.id, currentId++);
+                    orderedNodes.push(node);
+                }
+
+                // 연결된 다음 노드들을 큐에 추가
+                if (node.outputs) {
+                    node.outputs.forEach(output => {
+                        if (output.links) {
+                            output.links.forEach(linkId => {
+                                const link = graph.links[linkId];
+                                if (link) {
+                                    const targetNode = graph.getNodeById(link.target_id);
+                                    if (targetNode && !visited.has(targetNode.id)) {
+                                        queue.push(targetNode);
+                                        visited.add(targetNode.id);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+
+            if (orderedNodes.length === 0) {
+                alert("시작 노드에 연결된 노드가 없습니다.");
+                return;
+            }
+
+            // 코드 생성
+            let code = '// 게임 설정\n';
+            code += 'const GAME_CONFIG = {\n';
+            code += '    textSpeed: 30,      // 텍스트 타이핑 속도 (ms) - 낮을수록 빠름\n';
+            code += '    autoDelay: 2000,    // 오토 모드에서 다음으로 넘어가는 딜레이 (ms)\n';
+            code += '    skipSpeed: 5,       // 스킵 모드 텍스트 속도 (ms)\n';
+            code += '};\n\n';
+            code += 'const SCRIPT = [\n';
+
+            orderedNodes.forEach((node, index) => {
+                const assignedId = nodeIdMap.get(node.id);
+                const p = node.properties;
+
+                code += '    {\n';
+                code += `        id: ${assignedId},\n`;
+
+                if (node.type === "VN/Dialogue") {
+                    if (p.background) code += `        background: "${p.background}",\n`;
+                    if (p.bgm) code += `        bgm: "${p.bgm}",\n`;
+                    if (p.name) code += `        name: "${p.name}",\n`;
+                    if (p.text) code += `        text: "${p.text.replace(/"/g, '\\"')}",\n`;
+                    if (p.boxOpacity !== '' && p.boxOpacity !== undefined && p.boxOpacity !== null) {
+                        code += `        boxOpacity: ${p.boxOpacity},\n`;
+                    }
+
+                    // 연결된 다음 노드 ID 찾기
+                    const links = node.outputs[0]?.links;
+                    if (links && links.length > 0) {
+                        const link = graph.links[links[0]];
+                        if (link) {
+                            const targetNode = graph.getNodeById(link.target_id);
+                            if (targetNode && nodeIdMap.has(targetNode.id)) {
+                                const nextId = nodeIdMap.get(targetNode.id);
+                                // 다음 ID가 순차적이지 않은 경우만 명시
+                                if (nextId !== assignedId + 1) {
+                                    code += `        nextId: ${nextId},\n`;
+                                }
+                            }
+                        }
+                    }
+                } else if (node.type === "VN/Choice") {
+                    code += '        choices: [\n';
+
+                    p.choices.forEach((choice, cIndex) => {
+                        let nextId = 0;
+                        const outputLinks = node.outputs[cIndex]?.links;
+                        if (outputLinks && outputLinks.length > 0) {
+                            const link = graph.links[outputLinks[0]];
+                            if (link) {
+                                const targetNode = graph.getNodeById(link.target_id);
+                                if (targetNode && nodeIdMap.has(targetNode.id)) {
+                                    nextId = nodeIdMap.get(targetNode.id);
+                                }
+                            }
+                        }
+
+                        code += `            { text: "${choice.text.replace(/"/g, '\\"')}", nextId: ${nextId} }`;
+                        code += cIndex < p.choices.length - 1 ? ',\n' : '\n';
+                    });
+
+                    code += '        ]\n';
+                }
+
+                code += '    }';
+                code += index < orderedNodes.length - 1 ? ',\n' : '\n';
+            });
+
+            code += '];\n\n';
+            code += '// 스크립트 맵 생성\n';
+            code += 'const SCRIPT_MAP = {};\n';
+            code += 'SCRIPT.forEach((item, index) => {\n';
+            code += '    SCRIPT_MAP[item.id] = { ...item, _index: index };\n';
+            code += '});\n';
+
+            document.getElementById('outputCode').value = code;
+            updateStats();
+        }
+
+        // ========================================
+        // 유틸리티 함수들
+        // ========================================
+        function copyCode() {
+            const output = document.getElementById('outputCode');
+            if (!output.value) {
+                alert("먼저 코드를 생성해주세요.");
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('클립보드에 복사되었습니다!');
+        }
+
+        function saveAsScriptData() {
+            const output = document.getElementById('outputCode');
+            if (!output.value) {
+                // 코드가 없으면 먼저 생성
+                generateCode();
+            }
+
+            const code = document.getElementById('outputCode').value;
+            if (!code) {
+                alert("저장할 코드가 없습니다.");
+                return;
+            }
+
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'script-data.js';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearGraph() {
+            if (confirm("모든 노드를 삭제하시겠습니까?")) {
+                graph.clear();
+                document.getElementById('outputCode').value = '';
+
+                // 시작 노드 다시 추가
+                const startNode = LiteGraph.createNode("VN/Start");
+                startNode.pos = [100, 200];
+                graph.add(startNode);
+
+                updateStats();
+            }
+        }
+
+        function saveGraph() {
+            const data = JSON.stringify(graph.serialize(), null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vn-graph.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadGraph() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        graph.configure(data);
+                        updateStats();
+                        alert('그래프를 불러왔습니다!');
+                    } catch (err) {
+                        alert('파일 로드 오류: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function loadFromFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.js';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        parseAndCreateNodes(event.target.result);
+                        alert('스크립트를 불러왔습니다!');
+                    } catch (err) {
+                        alert('파싱 오류: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function parseAndCreateNodes(content) {
+            // SCRIPT 배열 추출
+            const safeContent = content
+                .replace(/BACKGROUNDS\.\w+/g, '""')
+                .replace(/CHARACTERS\.\w+(\?\.\w+)*/g, '""');
+
+            const match = safeContent.match(/const SCRIPT\s*=\s*(\[[\s\S]*?\]);/);
+            if (!match) {
+                throw new Error('SCRIPT 배열을 찾을 수 없습니다.');
+            }
+
+            const scriptArray = eval(match[1]);
+
+            graph.clear();
+
+            // 시작 노드 추가
+            const startNode = LiteGraph.createNode("VN/Start");
+            startNode.pos = [50, 200];
+            graph.add(startNode);
+
+            let x = 250;
+            const y = 200; // 고정 Y 위치로 일자 정렬
+            const nodeSpacing = 450; // 노드 간격 (넓게)
+            const createdNodes = new Map(); // id -> node
+
+            // 노드 생성 - 일자로 정렬
+            scriptArray.forEach((item, index) => {
+                let node;
+
+                if (item.choices) {
+                    node = LiteGraph.createNode("VN/Choice");
+                    node.properties.choices = item.choices.map(c => ({ text: c.text }));
+                    node.setupWidgets();
+                } else {
+                    node = LiteGraph.createNode("VN/Dialogue");
+                    // 위젯 값 업데이트
+                    node.properties.name = item.name || "";
+                    node.properties.text = item.text || "";
+                    node.properties.background = item.background || "";
+                    node.properties.bgm = item.bgm || "";
+                    node.properties.boxOpacity = item.boxOpacity !== undefined ? String(item.boxOpacity) : "";
+                    node.updateSize();
+                }
+
+                node.pos = [x, y];
+                graph.add(node);
+                createdNodes.set(item.id, { node, item });
+
+                x += nodeSpacing; // 일자로 계속 오른쪽으로
+            });
+
+            // 연결 생성
+            let firstNode = null;
+            scriptArray.forEach((item, index) => {
+                const nodeData = createdNodes.get(item.id);
+                if (!nodeData) return;
+
+                if (index === 0) {
+                    firstNode = nodeData.node;
+                }
+
+                if (item.choices) {
+                    item.choices.forEach((choice, cIndex) => {
+                        if (choice.nextId && createdNodes.has(choice.nextId)) {
+                            const targetData = createdNodes.get(choice.nextId);
+                            nodeData.node.connect(cIndex, targetData.node, 0);
+                        }
+                    });
+                } else if (item.nextId && createdNodes.has(item.nextId)) {
+                    const targetData = createdNodes.get(item.nextId);
+                    nodeData.node.connect(0, targetData.node, 0);
+                } else {
+                    // 순차 연결 (nextId가 없으면 다음 아이템으로)
+                    const nextItem = scriptArray[index + 1];
+                    if (nextItem && createdNodes.has(nextItem.id)) {
+                        const targetData = createdNodes.get(nextItem.id);
+                        nodeData.node.connect(0, targetData.node, 0);
+                    }
+                }
+            });
+
+            // 시작 노드와 첫 노드 연결
+            if (firstNode) {
+                startNode.connect(0, firstNode, 0);
+            }
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const nodes = graph._nodes || [];
+            let dialogueCount = 0;
+            let choiceCount = 0;
+
+            nodes.forEach(node => {
+                if (node.type === "VN/Dialogue") dialogueCount++;
+                else if (node.type === "VN/Choice") choiceCount++;
+            });
+
+            const linkCount = Object.keys(graph.links || {}).length;
+
+            document.getElementById('dialogueCount').textContent = dialogueCount;
+            document.getElementById('choiceCount').textContent = choiceCount;
+            document.getElementById('linkCount').textContent = linkCount;
+        }
+
+        // 주기적으로 통계 업데이트
+        setInterval(updateStats, 1000);
+
+        // 초기화
+        window.onload = initCanvas;
+    </script>
+</body>
+
+</html>
