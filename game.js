@@ -553,7 +553,7 @@ class VisualNovelEngine {
                 this.disableAutoSkip();
                 // 게임 종료 처리 추가
                 if (confirm('게임이 종료되었습니다. 처음으로 돌아가시겠습니까?')) {
-                    location.reload();
+                    this.resetGame();
                 }
             }
         }
@@ -616,6 +616,29 @@ class VisualNovelEngine {
     disableAutoSkip() {
         this.disableAuto();
         this.disableSkip();
+    }
+
+    // 게임 소프트 리셋 (페이지 새로고침 없이 처음으로)
+    resetGame() {
+        console.log('게임 초기화');
+        this.currentId = SCRIPT[0]?.id || 1;
+        this.currentIndex = 0;
+        this.choiceHistory = []; // 선택 기록 초기화
+        this.dynamicMapping = null;
+        this.disableAutoSkip(); // 오토/스킵 해제
+
+        // 배경음악 초기화
+        this.bgmAudio.pause();
+        this.currentBgm = null;
+        this.background.style.backgroundImage = '';
+        this.backgroundNext.style.opacity = '0';
+
+        // 캐릭터 숨김
+        this.hideAllCharacters();
+        this.nameBox.classList.remove('visible');
+
+        // 게임 재시작
+        this.showScript(this.currentId);
     }
 }
 
