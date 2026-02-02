@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)file:///C:/Users/nam20/Downloads/PPT%20(2)/presefntation.html -->
+<html lang="ko">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI와 함께하는 프로그래머 소통법</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="./AI와 함께하는 프로그래머 소통법_files/css2" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --primary-light: #16213e;
+      --secondary: #e8eef5;
+      --accent: #f96167;
+      --accent-gold: #ffd700;
+      --accent-mint: #22d3ee;
+      --text-dark: #1a1a2e;
+      --text-muted: #64748b;
+      --text-light: #f1f5f9;
+      --good: #22c55e;
+      --bad: #ef4444;
+      --font-display: 'Noto Serif KR', serif;
+      --font-body: 'Noto Sans KR', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      background: var(--primary);
+      line-height: 1.7;
+      overflow-x: hidden;
+      word-break: keep-all;
+    }
+
+    .slide-container {
+      display: flex;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .slide {
+      min-width: 100vw;
+      height: 100vh;
+      padding: 6vh 8vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      scroll-snap-align: start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1,
+    h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-family: var(--font-body);
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 2rem;
+    }
+
+    h3 {
+      font-size: clamp(1.25rem, 2vw, 1.5rem);
+    }
+
+    p {
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+    }
+
+    .slide-dark {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: var(--text-light);
+    }
+
+    .slide-dark::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(249, 97, 103, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(34, 211, 238, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .slide-light {
+      background: var(--secondary);
+      color: var(--text-dark);
+    }
+
+    .slide-light::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 60%;
+      height: 100%;
+      background: radial-gradient(ellipse, rgba(249, 97, 103, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .slide-title {
+      text-align: center;
+      align-items: center;
+    }
+
+    .slide-title .overline {
+      font-size: 0.9rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .slide-title h1 {
+      margin-bottom: 1.5rem;
+    }
+
+    .slide-title h1 .sub {
+      display: block;
+      font-size: 0.5em;
+      opacity: 0.7;
+      margin-top: 0.5rem;
+      font-weight: 400;
+    }
+
+    .slide-title .subtitle {
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      color: var(--accent-gold);
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
+
+    .slide-title .description {
+      opacity: 0.8;
+      max-width: 600px;
+    }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .toc-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .toc-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .toc-number {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      min-width: 2.5rem;
+    }
+
+    .toc-content h3 {
+      margin-bottom: 0.25rem;
+      color: var(--text-light);
+    }
+
+    .toc-content p {
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+
+    .image-gallery {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      height: 70vh;
+      margin-top: 2rem;
+    }
+
+    .image-gallery img {
+      max-height: 100%;
+      width: auto;
+      max-width: 30%;
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .image-gallery img:hover {
+      transform: scale(1.02);
+    }
+
+    .slide-quote {
+      text-align: center;
+      align-items: center;
+    }
+
+    .slide-quote blockquote {
+      max-width: 800px;
+    }
+
+    .slide-quote blockquote p {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+
+    .slide-quote cite {
+      font-size: 1rem;
+      opacity: 0.6;
+      font-style: normal;
+    }
+
+    .split-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .content-card {
+      padding: 2rem;
+      border-radius: 16px;
+      position: relative;
+    }
+
+    .content-card.bad-card {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .content-card.good-card {
+      background: rgba(34, 197, 94, 0.1);
+      border: 2px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .content-card h3 {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .content-card h3.bad {
+      color: var(--bad);
+    }
+
+    .content-card h3.good {
+      color: var(--good);
+    }
+
+    .code-example {
+      background: var(--primary);
+      color: var(--text-light);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      margin: 1rem 0;
+    }
+
+    .slide-light .code-example {
+      background: #1e293b;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 2rem auto 0;
+    }
+
+    .stats-grid.row-3-2 {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .stats-grid.row-3-2 .stat-card:nth-child(-n+3) {
+      grid-column: span 2;
+    }
+
+    .stats-grid.row-3-2 .stat-card:nth-child(n+4) {
+      grid-column: span 3;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 2rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .stat-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .feature-list {
+      list-style: none;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 0;
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .slide-light .feature-list li {
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list .icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .highlight {
+      background: linear-gradient(transparent 60%, var(--accent-gold) 60%);
+      padding: 0 4px;
+    }
+
+    .slide-light .highlight {
+      background: linear-gradient(transparent 60%, rgba(249, 97, 103, 0.3) 60%);
+    }
+
+    .process-list {
+      list-style: none;
+      max-width: 700px;
+      margin: 2rem auto 0;
+    }
+
+    .process-list li {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.25rem 0;
+      position: relative;
+    }
+
+    .process-list li:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 1.25rem;
+      top: 3.5rem;
+      width: 2px;
+      height: calc(100% - 1rem);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .slide-light .process-list li:not(:last-child)::after {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .process-number {
+      width: 2.5rem;
+      height: 2.5rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .process-content {
+      flex: 1;
+    }
+
+    .process-content strong {
+      color: var(--accent-gold);
+    }
+
+    .slide-light .process-content strong {
+      color: var(--accent);
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 900px;
+      margin: 2rem auto 0;
+    }
+
+    .slide-light .info-box {
+      background: white;
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .info-box h3 {
+      margin-bottom: 1.5rem;
+      color: var(--accent-gold);
+    }
+
+    .slide-light .info-box h3 {
+      color: var(--accent);
+    }
+
+    .warning-box {
+      background: rgba(239, 68, 68, 0.15);
+      border: 2px solid rgba(239, 68, 68, 0.4);
+      padding: 2rem;
+      border-radius: 16px;
+      max-width: 800px;
+      margin: 2rem auto 0;
+    }
+
+    .warning-box li {
+      padding: 0.75rem 0;
+      font-size: 1.2rem;
+    }
+
+    .slide-closing {
+      text-align: center;
+      align-items: center;
+    }
+
+    .slide-closing h1 {
+      font-size: clamp(3rem, 8vw, 6rem);
+      margin-bottom: 1rem;
+    }
+
+    .slide-closing .message {
+      font-size: 1.5rem;
+      opacity: 0.8;
+      margin-bottom: 3rem;
+    }
+
+    .credits {
+      margin-top: 4rem;
+      opacity: 0.6;
+    }
+
+    .credits p {
+      margin: 0.5rem 0;
+    }
+
+    .credits .highlight-text {
+      color: var(--accent-gold);
+      font-size: 1.25rem;
+      margin: 1rem 0;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide-content>* {
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+    }
+
+    .slide-content>*:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .slide-content>*:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .slide-content>*:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .slide-content>*:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .slide-content>*:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+
+    .slide-number {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      font-size: 0.9rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: white;
+      z-index: 100;
+    }
+
+    .nav-buttons {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      gap: 0.75rem;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: var(--font-body);
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    @media (max-width: 768px) {
+      .slide {
+        padding: 4vh 5vw;
+      }
+
+      .split-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .toc-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .image-gallery {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .image-gallery img {
+        max-width: 90%;
+        max-height: 25vh;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="slide-container" id="slideContainer" style="transform: translateX(0);">
+
+    <!-- ========== 1. 타이틀 ========== -->
+    <section class="slide slide-dark slide-title">
+      <div class="slide-content">
+        <p class="overline">Communication Guide</p>
+        <h1>
+          기획자를 위한<br>프로그래머 소통 가이드
+          <span class="sub">(feat. AI 프로그래머)</span>
+        </h1>
+        <p class="subtitle">"AI에게 배우는 명확한 커뮤니케이션"</p>
+        <p class="description">비주얼 노벨 개발 실습을 통해 배우는<br>개발자와의 협업 노하우</p>
+      </div>
+    </section>
+
+    <!-- ========== 2. 목차 (NEW) ========== -->
+    <section class="slide slide-dark">
+      <div class="slide-content">
+        <h2 style="text-align: center; margin-bottom: 3rem;">목차</h2>
+        <div class="toc-grid" style="">
+          <div class="toc-item">
+            <span class="toc-number">01</span>
+            <div class="toc-content">
+              <h3>AI의 한계</h3>
+              <p>맹신은 금물, 검증이 필수</p>
+            </div>
+          </div>
+          <div class="toc-item">
+            <span class="toc-number">02</span>
+            <div class="toc-content">
+              <h3>좋은 요청의 조건</h3>
+              <p>개발자가 좋아하는 기획이란?</p>
+            </div>
+          </div>
+          <div class="toc-item">
+            <span class="toc-number">03</span>
+            <div class="toc-content">
+              <h3>실전 소통 사례</h3>
+              <p>Before &amp; After 비교</p>
+            </div>
+          </div>
+          <div class="toc-item">
+            <span class="toc-number">04</span>
+            <div class="toc-content">
+              <h3>협업의 기술</h3>
+              <p>함께 만들어가는 개발</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 3. AI는 만능이 아닙니다 (원본 #2) ========== -->
+    <section class="slide slide-dark">
+      <div class="slide-content">
+        <h2 style="text-align: center; color: var(--bad);">⚠️ AI는 만능이 아닙니다</h2>
+        <div class="image-gallery" style="">
+          <img src="./AI와 함께하는 프로그래머 소통법_files/1.png" alt="AI 실수 사례 1">
+          <img src="./AI와 함께하는 프로그래머 소통법_files/2.png" alt="AI 실수 사례 2">
+          <img src="./AI와 함께하는 프로그래머 소통법_files/3.png" alt="AI 실수 사례 3">
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 4. 좋은 프롬프트로 예방 (원본 #3) ========== -->
+    <section class="slide slide-dark slide-quote">
+      <div class="slide-content">
+        <h2 style="text-align: center; margin-bottom: 2rem;">경력직 개발자도 겪는 흔한 문제입니다</h2>
+        <blockquote style="">
+          <p>우리가 직접 코드를 수정하기 어렵다면,<br><span style="color: var(--good);">"좋은 프롬프트(기획서)로 예방하는 것"</span><br>이 최선입니다</p>
+          <cite style="color: var(--accent-gold);">"기획이 명확해야 코드도 명확해집니다"</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- ========== 5. 발표자 소개 (원본 #4) ========== -->
+    <section class="slide slide-dark">
+      <div class="slide-content">
+        <h2 style="text-align: center;">이 친구가 누구냐고요?</h2>
+        <div style="display: flex; gap: 4rem; align-items: center; justify-content: center; margin-top: 2rem;">
+          <img src="./AI와 함께하는 프로그래머 소통법_files/14337_3.png"
+            style="max-height: 50vh; border-radius: 16px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.1);">
+          <div style="text-align: left;">
+            <ul class="feature-list" style="font-size: 1.1rem;">
+              <li>
+                <span class="icon">🔧</span>
+                <span>LLM 서비스 만들고, 서빙 인프라 굴리고,<br>프롬프트 깎는 사람입니다.</span>
+              </li>
+              <li>
+                <span class="icon">📑</span>
+                <span>공공기관 AI 사업도 PoC부터 본사업까지<br>여러 번 해봤고, 제안서 기술문서도 씁니다.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 6. 오늘 배울 내용 (원본 #5) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">오늘 배울 내용</h2>
+        <div class="info-box" style="margin-top: 2rem;">
+          <ul class="feature-list">
+            <li><span class="icon">💬</span><span>AI(프로그래머)에게 요청하는 방법</span></li>
+            <li><span class="icon">⚖️</span><span>좋은 기획(프롬프트) vs 나쁜 기획</span></li>
+            <li><span class="icon">🎮</span><span>실제 프로젝트 예시 (비주얼 노벨)</span></li>
+            <li><span class="icon">🔧</span><span>개발 문제 해결 과정</span></li>
+            <li><span class="icon">📝</span><span><strong>"프롬프트 = 기획서"</strong>의 이해</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 7. 실습 프로젝트 (원본 #6) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">실습 프로젝트</h2>
+        <p style="text-align: center; color: var(--accent); font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem;">
+          비주얼 노벨 게임 엔진 제작</p>
+        <div class="stats-grid row-3-2">
+          <div class="stat-card">
+            <div class="stat-icon">🌐</div>
+            <div class="stat-title">HTML/CSS/JS</div>
+            <div class="stat-desc">웹 기반 엔진</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👤</div>
+            <div class="stat-title">캐릭터 시스템</div>
+            <div class="stat-desc">표시 &amp; 전환</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔀</div>
+            <div class="stat-title">선택지 시스템</div>
+            <div class="stat-desc">분기 &amp; 루프</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🛠️</div>
+            <div class="stat-title">에디터 개발</div>
+            <div class="stat-desc">제작 도구</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-title">대화 루프</div>
+            <div class="stat-desc">선택지 복귀</div>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 2.5rem; color: var(--text-muted);">
+          💡 이 모든 것은 <strong style="color: var(--accent);">명확한 요청</strong> 하나로 시작되었습니다
+        </p>
+      </div>
+    </section>
+
+    <!-- ========== 8. 나쁜 요청 예시 (원본 #7) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center; color: var(--bad);">❌ 나쁜 요청(기획) 예시</h2>
+        <div class="info-box" style="border: 2px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+          <h3 style="color: var(--bad); text-align: center; font-size: 1.5rem;">"선택지 위치 좀 수정해줘 (안 예뻐)"</h3>
+          <p style="text-align: center; margin: 2rem 0 1.5rem; color: var(--text-muted);">개발자가 겪는 어려움:</p>
+          <ul class="feature-list">
+            <li><span class="icon">❓</span><span>어떻게 수정할지 불명확 <strong>(수치 부재)</strong></span></li>
+            <li><span class="icon">❓</span><span>현재 문제가 무엇인지 모름 <strong>(맥락 부재)</strong></span></li>
+            <li><span class="icon">❓</span><span>원하는 결과가 모호함 <strong>(기준 부재)</strong></span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 9. 좋은 요청 예시 (원본 #8) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center; color: var(--good);">✅ 좋은 요청(기획) 예시</h2>
+        <div class="info-box" style="border: 2px solid rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.05);">
+          <h3 style="color: var(--good); text-align: center; font-size: 1.3rem;">"3인 상태에서 1번 선택지가 아주 조금만 더 오른쪽으로 가면 될 거
+            같아 한 5px정도"</h3>
+          <p style="text-align: center; margin: 2rem 0 1.5rem; color: var(--text-muted);">개발자가 좋아하는 이유:</p>
+          <ul class="feature-list">
+            <li><span class="icon">✓</span><span>구체적인 상황 설명 → <strong style="color: var(--accent);">3인 상태 =
+                  조건</strong></span></li>
+            <li><span class="icon">✓</span><span>정확한 대상 지정 → <strong style="color: var(--accent);">1번 선택지 =
+                  대상</strong></span></li>
+            <li><span class="icon">✓</span><span>명확한 수치 제공 → <strong style="color: var(--accent);">5px =
+                  값</strong></span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 10. 구글 엔지니어링 리더 (원본 #9) ========== -->
+    <section class="slide slide-dark">
+      <div class="slide-content">
+        <h2 style="text-align: center;">구글 엔지니어링 리더의 AI 코딩 원칙</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 2rem;">
+          <div class="info-box" style="margin: 0;">
+            <h3 style="margin-bottom: 1.5rem;">🗣️ Addy Osmani <span
+                style="font-weight: 400; font-size: 0.8em; opacity: 0.7;">(Chrome Engineering Lead)</span></h3>
+            <ul class="feature-list" style="font-size: 0.95rem;">
+              <li>
+                <span class="icon">🏁</span>
+                <span><strong>코드보다 계획 먼저</strong><br><span style="opacity: 0.7;">바로 코딩하지 말고 spec.md로 요구사항
+                    정리</span></span>
+              </li>
+              <li>
+                <span class="icon">🔄</span>
+                <span><strong>작은 단위 반복</strong><br><span style="opacity: 0.7;">한 번에 완성하려 하지 말고 단계별로 구현</span></span>
+              </li>
+              <li>
+                <span class="icon">🗺️</span>
+                <span><strong>충분한 맥락 제공</strong><br><span style="opacity: 0.7;">제약조건, 피해야 할 패턴을 명시적으로 전달</span></span>
+              </li>
+              <li>
+                <span class="icon">👨‍🏫</span>
+                <span><strong>Human-in-the-loop</strong><br><span style="opacity: 0.7;">AI 코드는 주니어 코드라 생각하고 직접
+                    리뷰</span></span>
+              </li>
+              <li>
+                <span class="icon">💾</span>
+                <span><strong>자주 커밋</strong><br><span style="opacity: 0.7;">언제든 돌아갈 수 있게 롤백 포인트 확보</span></span>
+              </li>
+            </ul>
+          </div>
+          <div style="display: flex; justify-content: center;">
+            <img src="./AI와 함께하는 프로그래머 소통법_files/4.png"
+              style="max-height: 55vh; border-radius: 16px; box-shadow: 0 25px 60px rgba(0,0,0,0.5);">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 11. 실제 소통 #1 (원본 #10) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">실제 소통 과정 #1</h2>
+        <div class="split-content" style="margin-top: 2rem;">
+          <div class="content-card bad-card">
+            <h3 class="bad">❌ 느낌적인 요청</h3>
+            <div class="code-example">"좌표계가 이상한듯 한데"</div>
+            <p style="color: var(--text-muted); margin-top: 1rem;">→ 개발자가 코드를 처음부터 다시 봐야 함</p>
+          </div>
+          <div class="content-card good-card">
+            <h3 class="good">✓ 현상 기반 요청</h3>
+            <div class="code-example">"두 캐릭터인데, 왼쪽 캐릭터 선택지가 너무 왼쪽에 쏠려있어"</div>
+            <p style="color: var(--text-muted); margin-top: 1rem;">→ 문제 재현 경로와 현상이 명확함</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 12. 실제 소통 #2 (원본 #11) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">실제 소통 과정 #2</h2>
+        <div class="split-content" style="margin-top: 2rem;">
+          <div class="content-card bad-card">
+            <h3 class="bad">❌ 모호한 요청</h3>
+            <div class="code-example">"선택지가 캐릭터 위치에 맞게"</div>
+            <p style="color: var(--text-muted); margin-top: 1rem;">→ "맞게"의 기준이 기획자와 개발자가 다름</p>
+          </div>
+          <div class="content-card good-card">
+            <h3 class="good">✓ 로직 기반 요청</h3>
+            <div class="code-example">"X축은 유지해 주고 Y축만 변경해줘"</div>
+            <p style="color: var(--text-muted); margin-top: 1rem;">→ 수정해야 할 로직의 범위를 정확히 지정</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 13. 프로그래머가 좋아하는 기획 (원본 #12) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">프로그래머가 좋아하는 기획</h2>
+        <div class="stats-grid row-3-2">
+          <div class="stat-card">
+            <div class="stat-icon">🔢</div>
+            <div class="stat-title">구체적인 숫자</div>
+            <div class="stat-desc">감정적 표현 대신<br>정확한 수치로</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-title">전제 조건</div>
+            <div class="stat-desc">어떤 상황에서<br>발생하는지</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-title">기대 결과</div>
+            <div class="stat-desc">최종적으로<br>어떻게 되어야 하는지</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✂️</div>
+            <div class="stat-title">단위 업무</div>
+            <div class="stat-desc">한 번에<br>하나씩만</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📸</div>
+            <div class="stat-title">증거 자료</div>
+            <div class="stat-desc">스크린샷,<br>에러 로그</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 14. 개발은 대화하며 완성 (원본 #13) ========== -->
+    <section class="slide slide-dark">
+      <div class="slide-content">
+        <h2 style="text-align: center;">개발은 '대화'하며 완성됩니다</h2>
+        <div class="info-box">
+          <h3>실제 위치 조정 과정 (핑퐁)</h3>
+          <ul class="process-list">
+            <li>
+              <span class="process-number">1</span>
+              <span class="process-content">"조금 오른쪽으로" → 개발자: <strong>+25px</strong> 이동</span>
+            </li>
+            <li>
+              <span class="process-number">2</span>
+              <span class="process-content">"5px 정도 더" → 개발자: <strong>+5px</strong> 이동</span>
+            </li>
+            <li>
+              <span class="process-number">3</span>
+              <span class="process-content">"한 번만 더 5px" → 개발자: <strong>+5px</strong> 이동</span>
+            </li>
+            <li>
+              <span class="process-number">✓</span>
+              <span class="process-content" style="color: var(--good);"><strong>"딱 좋아!"</strong> → 컨펌 완료 🎉</span>
+            </li>
+          </ul>
+          <p style="text-align: center; margin-top: 2rem; opacity: 0.8;">
+            💡 한 번에 완벽할 순 없습니다. <strong>빠른 피드백과 수정</strong>이 핵심!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 15. 버그 리포팅의 정석 (원본 #14) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">버그 리포팅의 정석</h2>
+        <div class="info-box">
+          <ul class="feature-list">
+            <li>
+              <span class="icon" style="color: var(--bad);">❌</span>
+              <span>"안 돼요 / 버그 있어요"</span>
+            </li>
+            <li>
+              <span class="icon" style="color: var(--good);">✓</span>
+              <span>"버튼을 클릭해도 <strong>[진행]</strong> 이벤트가 발생하지 않아요"</span>
+            </li>
+            <li>
+              <span class="icon" style="color: var(--good);">✓</span>
+              <span>"3개 중 <strong>1번 선택지만</strong> 안 보여요"</span>
+            </li>
+            <li>
+              <span class="icon" style="color: var(--good);">✓</span>
+              <span>"배경 전환 효과 때문에 <strong>UI가 가려져요</strong>"</span>
+            </li>
+          </ul>
+          <p style="text-align: center; margin-top: 2rem; font-size: 1.1rem;">
+            <strong style="color: var(--accent);">증상 + 재현 방법</strong>을 말해주면 개발자가 춤을 춥니다 💃
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 16. 큰 기능 쪼개기 (원본 #15) ========== -->
+    <section class="slide slide-dark">
+      <div class="slide-content">
+        <h2 style="text-align: center;">큰 기능은 잘게 쪼개서 요청하기</h2>
+        <div class="info-box">
+          <h3>"대화 순환 시스템" (너무 큼) 👉 쪼개기</h3>
+          <ul class="process-list">
+            <li>
+              <span class="process-number">1</span>
+              <span class="process-content">"한 번 선택한 선택지는 다시 안 나오게" <strong>(once flag)</strong></span>
+            </li>
+            <li>
+              <span class="process-number">2</span>
+              <span class="process-content">"남은 캐릭터 수에 따라 레이아웃 변경" <strong>(if 문)</strong></span>
+            </li>
+            <li>
+              <span class="process-number">3</span>
+              <span class="process-content">"선택지가 다 떨어지면 다음 씬으로" <strong>(fallback)</strong></span>
+            </li>
+          </ul>
+          <p style="text-align: center; margin-top: 2rem; opacity: 0.8;">
+            💡 개발자가 로직을 짜기 쉽게 <strong>논리 단계</strong>를 나눠주세요!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 17. 이 과정을 통해 만든 것들 (원본 #16) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">이 과정을 통해 만든 것들</h2>
+        <div class="stats-grid row-3-2" style="margin-top: 3rem;">
+          <div class="stat-card">
+            <div class="stat-icon">✨</div>
+            <div class="stat-title">동적 레이아웃</div>
+            <div class="stat-desc">2인/3인 자동 전환</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📐</div>
+            <div class="stat-title">자동 좌표 계산</div>
+            <div class="stat-desc">캐릭터 위치 로직</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎬</div>
+            <div class="stat-title">크로스페이드</div>
+            <div class="stat-desc">부드러운 전환 연출</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-title">대화 루프</div>
+            <div class="stat-desc">순환 시스템</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🛠️</div>
+            <div class="stat-title">비주얼 에디터</div>
+            <div class="stat-desc">제작 도구</div>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 3rem; font-size: 1.2rem;">
+          여러분의 <strong style="color: var(--accent);">명확한 기획</strong>이 <strong style="color: var(--accent);">멋진
+            기능</strong>이 됩니다!
+        </p>
+      </div>
+    </section>
+
+    <!-- ========== 18. 프롬프트 = 기획서 (원본 #17) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">프롬프트 작성 = 기획서 작성</h2>
+        <div class="split-content" style="margin-top: 2rem;">
+          <div class="content-card" style="background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.1);">
+            <h3 style="color: var(--text-muted);">💬 AI 프롬프트</h3>
+            <ul class="feature-list" style="margin-top: 1rem;">
+              <li><span class="icon">📍</span>"3인 모드일 때" (조건)</li>
+              <li><span class="icon">🎯</span>"1번 선택지를" (대상)</li>
+              <li><span class="icon">📐</span>"5px 오른쪽으로" (값)</li>
+            </ul>
+          </div>
+          <div class="content-card" style="background: rgba(249, 97, 103, 0.08); border: 2px solid var(--accent);">
+            <h3 style="color: var(--accent);">📝 프로그래머 기획서</h3>
+            <ul class="feature-list" style="margin-top: 1rem;">
+              <li><span class="icon">📍</span><strong>[조건]</strong> 3인 레이아웃 활성화 시</li>
+              <li><span class="icon">🎯</span><strong>[대상]</strong> Choice_Btn_01 객체</li>
+              <li><span class="icon">📐</span><strong>[동작]</strong> X position += 5</li>
+            </ul>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 2.5rem; color: var(--text-muted);">
+          AI와 대화하는 연습은 곧 <strong style="color: var(--accent);">개발자와 일하는 근육</strong>을 키우는 과정입니다
+        </p>
+      </div>
+    </section>
+
+    <!-- ========== 19. 핵심 정리 (원본 #18) ========== -->
+    <section class="slide slide-light">
+      <div class="slide-content">
+        <h2 style="text-align: center;">핵심 정리</h2>
+        <div class="info-box">
+          <ul class="feature-list">
+            <li>
+              <span class="icon">1️⃣</span>
+              <span><span class="highlight">두루뭉술한 느낌</span> ❌ → <strong>명확한 수치/상태</strong> ✓</span>
+            </li>
+            <li>
+              <span class="icon">2️⃣</span>
+              <span><span class="highlight">"그냥 안 돼요"</span> ❌ → <strong>"어떻게 하니 안 돼요"</strong> ✓</span>
+            </li>
+            <li>
+              <span class="icon">3️⃣</span>
+              <span><span class="highlight">한 방에 다</span> ❌ → <strong>하나씩 차근차근</strong> ✓</span>
+            </li>
+            <li>
+              <span class="icon">4️⃣</span>
+              <span><span class="highlight">명령</span> ❌ → <strong>협업과 조율</strong> ✓</span>
+            </li>
+          </ul>
+          <p style="text-align: center; margin-top: 2rem; font-size: 1.25rem; color: var(--accent); font-weight: 700;">
+            좋은 기획자는 '말이 통하는' 기획자입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 20. 존중과 배려 (원본 #19) ========== -->
+    <section class="slide slide-dark">
+      <div class="slide-content">
+        <h2 style="text-align: center; color: var(--bad);">❌ 프로그래머에게<br>절대 해서는 안 되는 말들</h2>
+        <div class="warning-box">
+          <ul class="feature-list" style="list-style: none;">
+            <li>
+              <span class="icon">😤</span>
+              <span><strong>"이거 왜 못해요?"</strong> (기술적 난이도 무시)</span>
+            </li>
+            <li>
+              <span class="icon">🤖</span>
+              <span><strong>"AI는 해주던데요?"</strong> (사람과 도구 혼동)</span>
+            </li>
+          </ul>
+        </div>
+        <div style="text-align: center; margin-top: 3rem;">
+          <h3 style="color: var(--good); font-size: 2rem; margin-bottom: 1.5rem;">"우리는 함께 배우는 동료입니다"</h3>
+          <p style="opacity: 0.8; max-width: 600px; margin: 0 auto;">
+            사람은 AI보다 느릴 수 있지만, 더 깊은 고민을 합니다.<br>
+            실수를 비난하기보다 <strong>함께 해결책을 찾아주세요.</strong>
+          </p>
+          <p style="margin-top: 2rem; color: var(--accent-gold); font-weight: 700; font-size: 1.3rem;">
+            최고의 복지는 '좋은 동료'입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 21. Thank You (원본 #20) ========== -->
+    <section class="slide slide-dark slide-closing">
+      <div class="slide-content">
+        <h1>Thank You!</h1>
+        <p class="message">여러분의 멋진 기획을 응원합니다! 🎉</p>
+        <div class="credits">
+          <p>💡 이 프레젠테이션도</p>
+          <p class="highlight-text">AI(Claude)가 제작했습니다</p>
+          <div style="margin-top: 1.5rem; font-size: 0.9rem;">
+            <p>⚡ 초안 제작: 약 3분</p>
+            <p>🔧 검수 및 수정: 1시간</p>
+            <p style="margin-top: 0.5rem; opacity: 0.6;">(빠른 생성보다 중요한 것은 <strong>정확한 검수</strong>입니다)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="slide-number" id="slideNumber">1 / 21</div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="prevSlide()">◀ 이전</button>
+    <button class="nav-btn" onclick="nextSlide()">다음 ▶</button>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    function updateSlide() {
+      const container = document.getElementById('slideContainer');
+      container.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      document.getElementById('slideNumber').textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+      const currentSlideEl = slides[currentSlide];
+      const animatedElements = currentSlideEl.querySelectorAll('.slide-content > *');
+      animatedElements.forEach(el => {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = null;
+      });
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) nextSlide();
+        else prevSlide();
+      }
+    });
+  </script>
+
+
+</body>
+
+</html>

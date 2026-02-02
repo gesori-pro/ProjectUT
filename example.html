@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI와 함께하는 프로그래머 소통법 - 실전 예시</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            overflow: hidden;
+            font-size: 2vmin;
+            word-break: keep-all;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .slide {
+            min-width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        h2 {
+            font-size: 2.8em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #00d9ff;
+        }
+
+        p,
+        li {
+            font-size: 1.4em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style: none;
+            max-width: 90vw;
+        }
+
+        li {
+            padding-left: 40px;
+            position: relative;
+        }
+
+        li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #00d9ff;
+        }
+
+        .good {
+            color: #00ff88;
+        }
+
+        .bad {
+            color: #ff6b6b;
+        }
+
+        .highlight {
+            color: #ffd700;
+        }
+
+        .example-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            max-width: 90vw;
+            width: fit-content;
+        }
+
+        .chat-bubble {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            max-width: 85%;
+        }
+
+        .chat-bubble.user {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: rgba(255, 107, 107, 0.3);
+            margin-left: auto;
+        }
+
+        .chat-bubble.ai {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .chat-label {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #ffd700;
+            margin: 20px 0;
+        }
+
+        .split-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+            max-width: 90vw;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(0, 217, 255, 0.2);
+            border: 2px solid #00d9ff;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 217, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .slide-number {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            color: white;
+            font-size: 1.2em;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide-container" id="slideContainer">
+        <!-- Slide 1: 타이틀 -->
+        <div class="slide">
+            <h1>🎮 AI와 대화하며 배우는<br>프로그래머 소통법</h1>
+            <p style="font-size: 1.8em; color: #00d9ff; margin-top: 20px;">실제 개발 대화 예시로 배우는 명확한 커뮤니케이션</p>
+            <p style="margin-top: 50px; opacity: 0.7;">게임 기획 지망생을 위한 실전 가이드</p>
+        </div>
+
+        <!-- Slide 2: 왜 이게 중요한가 -->
+        <div class="slide">
+            <h2>왜 "말하는 방법"이 중요할까요?</h2>
+            <div class="example-box">
+                <p style="font-size: 1.6em; text-align: center;">프로그래머(또는 AI)는<br><span class="highlight">"읽은
+                        그대로"</span> 이해합니다.</p>
+                <p style="margin-top: 30px; text-align: center; opacity: 0.8;">여러분의 머릿속 이미지를 정확히 전달하려면<br><strong>구체적인
+                        표현</strong>이 필요합니다.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: 실제 대화 예시 1 - 문제 상황 -->
+        <div class="slide">
+            <h2>실제 대화 예시 #1</h2>
+            <h3 class="bad">🚫 아쉬운 요청</h3>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"게임이 끝나고 처음으로 돌아가게 해줘"</p>
+            </div>
+            <div class="arrow">⬇️</div>
+            <div class="example-box" style="border-color: #ff6b6b;">
+                <p><strong>문제점:</strong></p>
+                <ul>
+                    <li>"처음"이 어디인지 불명확 (ID 1번? 타이틀 화면?)</li>
+                    <li>선택지 기록은 어떻게 할지 언급 없음</li>
+                    <li>BGM, 배경은 초기화할지 모름</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: 실제 대화 예시 1 - 개선 -->
+        <div class="slide">
+            <h2>이렇게 말하면 더 좋아요!</h2>
+            <h3 class="good">✅ 개선된 요청</h3>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"ID 1번으로 되돌아가게 해줘.<br>그리고 선택지 기록도 완전 초기화시켜줘."</p>
+            </div>
+            <div class="arrow">⬇️</div>
+            <div class="example-box" style="border-color: #00ff88;">
+                <p><strong>좋은 점:</strong></p>
+                <ul>
+                    <li class="good">"ID 1번" = 정확한 목표 지점</li>
+                    <li class="good">"선택지 기록 초기화" = 추가 동작 명시</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: 실제 대화 예시 2 - 문제 상황 -->
+        <div class="slide">
+            <h2>실제 대화 예시 #2</h2>
+            <h3 class="bad">🚫 아쉬운 요청</h3>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"이미지가 안 불러와져"</p>
+            </div>
+            <div class="arrow">⬇️</div>
+            <div class="example-box" style="border-color: #ff6b6b;">
+                <p><strong>문제점:</strong></p>
+                <ul>
+                    <li>어떤 이미지인지 모름</li>
+                    <li>어디서 확인했는지 모름 (로컬? 서버?)</li>
+                    <li>에러 메시지가 있는지 모름</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: 실제 대화 예시 2 - 개선 -->
+        <div class="slide">
+            <h2>이렇게 말하면 더 좋아요!</h2>
+            <h3 class="good">✅ 개선된 요청</h3>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"GitHub Pages에서 Character/Rabbit.png가 안 보여.<br>콘솔에 'OpaqueResponseBlocking' 에러가 떠."</p>
+            </div>
+            <div class="arrow">⬇️</div>
+            <div class="example-box" style="border-color: #00ff88;">
+                <p><strong>좋은 점:</strong></p>
+                <ul>
+                    <li class="good">환경 명시 (GitHub Pages)</li>
+                    <li class="good">파일 경로 제공</li>
+                    <li class="good">에러 메시지 복사</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: 실제 대화 예시 3 -->
+        <div class="slide">
+            <h2>실제 대화 예시 #3</h2>
+            <h3 class="bad">🚫 아쉬운 요청</h3>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"confirm 창이 안 떠"</p>
+            </div>
+            <div class="arrow">⬇️</div>
+            <h3 class="good" style="margin-top: 30px;">✅ 개선된 요청</h3>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"사이트 정책 때문인지 confirm 팝업이 안 나오는 것 같아.<br>게임 내에서 선택지로 물어보게 해줘."</p>
+            </div>
+            <div class="tip-box">
+                <p>💡 <strong>원인 추측 + 대안 제시</strong>를 함께 하면 해결이 빨라집니다!</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: 핵심 공식 -->
+        <div class="slide">
+            <h2>좋은 요청의 공식</h2>
+            <div class="example-box" style="font-size: 1.3em;">
+                <p style="text-align: center; font-size: 1.8em; color: #ffd700; margin-bottom: 30px;">
+                    <strong>상황 + 문제 + 기대결과</strong>
+                </p>
+                <div class="split-content" style="max-width: 100%;">
+                    <div>
+                        <h3>📍 상황 (When/Where)</h3>
+                        <p>"3인 모드에서", "엔딩 후에"</p>
+                    </div>
+                    <div>
+                        <h3>❓ 문제 (What)</h3>
+                        <p>"버튼이 안 눌려", "이미지가 안 보여"</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 30px;">
+                    <h3>🎯 기대결과 (How)</h3>
+                    <p>"ID 1번으로 돌아가게", "5px 오른쪽으로"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: 피해야 할 표현 -->
+        <div class="slide">
+            <h2 class="bad">🚫 피해야 할 표현들</h2>
+            <div class="split-content">
+                <div class="content-section" style="border: 2px solid #ff6b6b;">
+                    <h3 class="bad">❌ 이건 피해주세요</h3>
+                    <ul>
+                        <li>"이거 왜 안 돼?"</li>
+                        <li>"좀 이상해"</li>
+                        <li>"그냥 바꿔줘"</li>
+                        <li>"알아서 해줘"</li>
+                    </ul>
+                </div>
+                <div class="content-section" style="border: 2px solid #00ff88;">
+                    <h3 class="good">✅ 이렇게 바꿔보세요</h3>
+                    <ul>
+                        <li>"~를 클릭하면 ~가 안 돼"</li>
+                        <li>"~가 ~처럼 보여야 하는데 ~로 보여"</li>
+                        <li>"~를 ~로 수정해줘"</li>
+                        <li>"~할 때 ~하게 해줘"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: 숫자와 증거의 힘 -->
+        <div class="slide">
+            <h2>숫자와 증거의 힘 💪</h2>
+            <div class="example-box">
+                <div class="split-content" style="max-width: 100%;">
+                    <div>
+                        <h3 class="bad">❌ 감정적 표현</h3>
+                        <p>"너무 왼쪽이야"</p>
+                        <p>"약간만 더"</p>
+                        <p>"좀 크게"</p>
+                    </div>
+                    <div>
+                        <h3 class="good">✅ 수치 기반 표현</h3>
+                        <p>"5px 오른쪽으로"</p>
+                        <p>"3초 후에"</p>
+                        <p>"1.5배로"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tip-box">
+                <p>📸 <strong>스크린샷</strong>이나 <strong>에러 로그</strong>를 함께 보내면 10배 빨라집니다!</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: 단계별 요청 -->
+        <div class="slide">
+            <h2>큰 기능은 쪼개서 요청하기</h2>
+            <div class="example-box">
+                <h3 class="bad">❌ 한 번에 다 요청</h3>
+                <p>"게임 리셋 기능 만들어줘"</p>
+                <div class="arrow">⬇️</div>
+                <h3 class="good">✅ 단계별 요청</h3>
+                <ul>
+                    <li>1단계: "ID를 1번으로 되돌려줘"</li>
+                    <li>2단계: "선택지 기록을 초기화해줘"</li>
+                    <li>3단계: "BGM과 배경도 리셋해줘"</li>
+                    <li>4단계: "리셋 버튼을 화면에 표시해줘"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: 대화는 핑퐁 -->
+        <div class="slide">
+            <h2>개발은 "핑퐁"입니다 🏓</h2>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"오른쪽으로 좀 옮겨줘"</p>
+            </div>
+            <div class="chat-bubble ai">
+                <div class="chat-label">🤖 AI/개발자</div>
+                <p>"25px 옮겼습니다"</p>
+            </div>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p>"조금만 더, 5px 정도"</p>
+            </div>
+            <div class="chat-bubble ai">
+                <div class="chat-label">🤖 AI/개발자</div>
+                <p>"5px 더 옮겼습니다"</p>
+            </div>
+            <div class="chat-bubble user">
+                <div class="chat-label">👤 기획자</div>
+                <p class="good">"딱 좋아! 👍"</p>
+            </div>
+            <p style="margin-top: 20px; opacity: 0.8;">한 번에 완벽할 필요 없어요. 빠른 피드백이 핵심!</p>
+        </div>
+
+        <!-- Slide 13: 핵심 정리 -->
+        <div class="slide">
+            <h2>오늘의 핵심 정리</h2>
+            <div class="example-box">
+                <ul style="font-size: 1.3em;">
+                    <li><span class="highlight">상황</span>을 먼저 설명하기 (언제, 어디서)</li>
+                    <li><span class="highlight">숫자</span>로 표현하기 (5px, 3초, ID 1번)</li>
+                    <li><span class="highlight">증거</span> 첨부하기 (스크린샷, 에러 로그)</li>
+                    <li><span class="highlight">단계별</span>로 요청하기 (한 번에 하나씩)</li>
+                    <li><span class="highlight">피드백</span>은 빠르게! (핑퐁처럼)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: 마무리 -->
+        <div class="slide">
+            <h1>Thank You! 🎮</h1>
+            <p style="font-size: 1.8em; margin-top: 30px; color: #00d9ff;">명확하게 말하는 기획자가 되세요!</p>
+            <div style="margin-top: 80px; opacity: 0.7; font-size: 1.2em;">
+                <p>💡 이 프레젠테이션도</p>
+                <p style="font-size: 1.5em; color: #ffd700; margin-top: 15px;">AI(Antigravity)가 제작했습니다</p>
+                <p style="margin-top: 20px; opacity: 0.6; font-size: 0.9em;">
+                    실제 개발 대화를 기반으로 구성되었습니다.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-number" id="slideNumber">1 / 14</div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="prevSlide()">◀ 이전</button>
+        <button class="nav-btn" onclick="nextSlide()">다음 ▶</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 14;
+
+        function updateSlide() {
+            const container = document.getElementById('slideContainer');
+            container.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            document.getElementById('slideNumber').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+    </script>
+</body>
+
+</html>
